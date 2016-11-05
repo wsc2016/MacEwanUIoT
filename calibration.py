@@ -2,7 +2,7 @@
 # CMPT 496
 # IoT Waste Management Project
 #
-# Sensor Access Code
+# Sensor Calibration Code
 #
 # Author: Walter Chelliah
 # October/November 2016
