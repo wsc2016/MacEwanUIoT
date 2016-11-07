@@ -35,7 +35,7 @@ import socket
 
 bus = smbus.SMBus(1)        #Sets I/O to I2C1
 address = 0x48              #Use address found using "i2cdetect -y 1"
-HOST = '192.168.1.126'
+HOST = '10.19.19.81'
 PORT = 4444
 BLOCK_SIZE = 16
 
@@ -44,12 +44,13 @@ SENSOR_NAME = 'MacEwan-10'
 SENSOR_TYPE = 'Sharp Infrared Proximity'
 SENSOR_LOCATION = 'CCC Building 6, Second Floor'
 
-# initialize sensor
-def sensor_setup():
+# initialize sensor and ADC
+def power_init():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
+    GPIO.setup(17, GPIO.OUT)
     GPIO.setup(18, GPIO.OUT)
-    print ("SENSOR SETUP")
+    print ("POWER INITIALIZED")
 
 # enable sensor
 def sensor_on():
@@ -61,20 +62,18 @@ def sensor_off():
     GPIO.output(18, 0)
     print ("SENSOR DISABLED")
     
-#   internal reference POWER UP switch
-#   - increases power draw by approximately 1V
-#   - voltage range approaches 5V
+#enable ADC
 def power_up():
+    GPIO.output(17, 1) #power up
+    print ('Powering UP Analog/Digital Convertor')
+    time.sleep(1)
     bus.write_byte(address, 0b00001100) #power up
     print ('Powering UP Internal Reference')
-    print ('Powering UP Analog/Digital Convertor')
 
-#   internal reference POWER DOWN switch
-#   - decreases power draw by approximately 1V
-#   - voltage range fluctuates from 3.3V to 4V
+#disable ADC
 def power_down():
-    bus.write_byte(address, 0b00000000)  #power down
-    print ('Powering DOWN')
+    GPIO.output(17, 0)  #power down
+    print ('Powering DOWN Analog/Digital Convertor')
 
 def pad(s):
     return s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
@@ -134,22 +133,25 @@ def send_data():
         s.close()
     
 def main():
-    sensor_setup()
+    power_init()
+    time.sleep(1)         #Time delay
 
     cycle_count = 0 #counts power cycles
     
     while True:
         power_up()
+        time.sleep(5)         #Time delay
         sensor_on()
         
-        time.sleep(4)         #Time delay
+        time.sleep(3)         #Time delay
 
         #sends three sets of data to the server per power cycle
-        for num in range(0,3):
+        for num in range(0,10):
             send_data()
-            time.sleep(1)
+            time.sleep(0.5)
         
         sensor_off()
+        time.sleep(0.5)         #Time delay
         power_down()
 
         cycle_count += 1
