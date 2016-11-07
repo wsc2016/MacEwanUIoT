@@ -8,6 +8,11 @@
 # Author: Walter Chelliah
 # October/November 2016
 #
+# Description:
+#       This is a server-side application that receives encrypted sensor data from a
+#       client application. This application then decrypts the data and inserts it into a
+#       mySQL database for storage and remote retrieval.
+#
 ########################################################################################
 
 from Crypto.Cipher import AES
