@@ -111,7 +111,7 @@ def get_voltage():
     for num in range(0,20):
         var = bus.read_i2c_block_data(address, 12, 2)   #Read 2 bytes of raw input from ADC
         voltage = (var[0] & 0x0F) * 256 + var[1]        #Perform 12-bit conversion
-        time.sleep(0.2)
+        time.sleep(0.1)
 
         #sum up the last ten readings
         if num >= 10:
@@ -133,7 +133,7 @@ def send_data():
         send_string = makestring(current)
         ciphertext = encrypt(send_string)
 
-        s.sendall(ciphertext + '\n'.encode('ascii'))
+        s.sendall(ciphertext + '\n'.encode())
             
         print ('Sending:')
         print ('        SENSOR_READING: ', current)
@@ -174,13 +174,13 @@ def main():
         sensor_on()
         print ('Acquiring Readings...')
         
-        time.sleep(1)         #Time delay
+        time.sleep(3)         #Time delay
 
         #sends one set of data to the server per power cycle
         send_data()
         
         sensor_off()
-        time.sleep(0.5)         #Time delay
+        time.sleep(1)         #Time delay
         power_down()
 
         cycle_count += 1
@@ -188,8 +188,8 @@ def main():
         print ('CYCLE ' + str(cycle_count) + ' COMPLETED')
         print ('============================================================' + '\n')
 
-        print ('Pausing...')
-        time.sleep(5)         #Time delay
+        print ('Pausing For 10 Seconds...')
+        time.sleep(10)         #Time delay
 
 if __name__ == "__main__":
     main()
