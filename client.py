@@ -2,6 +2,7 @@
 # CMPT 496
 # IoT Waste Management Project
 #
+# Python3
 # Client-Side Code
 # client.py
 #
@@ -35,14 +36,17 @@ import socket
 
 bus = smbus.SMBus(1)        #Sets I/O to I2C1
 address = 0x48              #Use address found using "i2cdetect -y 1"
-HOST = '10.19.19.81'
+HOST = '192.168.1.126'
 PORT = 4444
 BLOCK_SIZE = 16
 
 #Sensor Description
-SENSOR_NAME = 'MacEwan-10'
-SENSOR_TYPE = 'Sharp Infrared Proximity'
-SENSOR_LOCATION = 'CCC Building 6, Second Floor'
+SENSOR_NAME = 'MacEwan-42'
+SENSOR_BRAND = "Sharp"
+SENSOR_TYPE = 'Infrared Proximity'
+BIN_LOCATION = 'CCC Building 8, Third Floor'
+HALL_DESCRIPTION = 'Gym Main Entrance'
+ROOM_NUMBER = '8-330B'
 
 # initialize sensor and ADC
 def power_init():
@@ -65,18 +69,21 @@ def sensor_off():
 #enable ADC
 def power_up():
     GPIO.output(17, 1) #power up
-    print ('Powering UP Analog/Digital Convertor')
+    print ('POWERING UP ANALOG-DIGITAL CONVERTOR')
     time.sleep(1)
-    bus.write_byte(address, 0b00001100) #power up
-    print ('Powering UP Internal Reference')
+    #bus.write_byte(address, 0b00001100) #power up
+    #print ('Powering UP Internal Reference')
 
 #disable ADC
 def power_down():
     GPIO.output(17, 0)  #power down
-    print ('Powering DOWN Analog/Digital Convertor')
+    print ('POWERING DOWN ANALOG-DIGITAL CONVERTOR')
 
 def pad(s):
     return s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
+
+def unpad(s):
+    return s[:-ord(s[len(s)-1:])]
 
 def encrypt(estring):
     key = '1234567890ABCDEF'
@@ -85,14 +92,33 @@ def encrypt(estring):
     cipher = AES.new(key, AES.MODE_CBC, iv)
     return base64.b64encode(cipher.encrypt(nstring))
 
+def decrypt(data):
+    key = '1234567890ABCDEF'
+    iv = '0987654321UVWXYZ'
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    ndata = base64.b64decode(data)  
+    return unpad(cipher.decrypt(ndata))
+
 def makestring(measurement):
-    new_string =  measurement + '[' + SENSOR_NAME + '[' + SENSOR_TYPE + '[' + SENSOR_LOCATION
+    new_string =  measurement + '[' + SENSOR_NAME + '[' + SENSOR_BRAND + '[' + SENSOR_TYPE + '[' + BIN_LOCATION + '[' + HALL_DESCRIPTION + '[' + ROOM_NUMBER
     return new_string
 
 def get_voltage():
-    var = bus.read_i2c_block_data(address, 12, 2)   #Read 2 bytes of raw input from ADC
-    voltage = (var[0] & 0x0F) * 256 + var[1]        #Perform 12-bit conversion
-    return str(voltage)
+    avg_voltage = 0
+
+    #get twenty readings from sensor
+    #first ten readings may include zeroes as sensor and ADC warms up so they are ignored
+    for num in range(0,20):
+        var = bus.read_i2c_block_data(address, 12, 2)   #Read 2 bytes of raw input from ADC
+        voltage = (var[0] & 0x0F) * 256 + var[1]        #Perform 12-bit conversion
+        time.sleep(0.2)
+
+        #sum up the last ten readings
+        if num >= 10:
+            avg_voltage = avg_voltage + voltage
+
+    #return the average of the last ten readings
+    return str(int(avg_voltage/10))
 
 def send_data():
     current = get_voltage()
@@ -100,36 +126,39 @@ def send_data():
     try:
         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)    #set up socket
         s.connect((HOST, PORT)) #connect to IP on PORT specified
-        print 'Connecting to ', HOST, ' on port ', PORT
-        print '\n'
+        print ('Connecting to ', HOST, ' on port ', PORT)
+        print ('\n')
 
         #Send data
         send_string = makestring(current)
         ciphertext = encrypt(send_string)
 
-        s.sendall(ciphertext + '\n')
+        s.sendall(ciphertext + '\n'.encode('ascii'))
             
-        print 'Sending:'
-        print '        SENSOR_READING: ', current
-        print '        SENSOR_NAME: ', SENSOR_NAME
-        print '        SENSOR_TYPE: ', SENSOR_TYPE
-        print '        SENSOR_LOCATION: ', SENSOR_LOCATION
-        print '\n'
+        print ('Sending:')
+        print ('        SENSOR_READING: ', current)
+        print ('        SENSOR_NAME: ', SENSOR_NAME)
+        print ('        SENSOR_BRAND: ', SENSOR_BRAND)
+        print ('        SENSOR_TYPE: ', SENSOR_TYPE)
+        print ('        BIN_LOCATION: ', BIN_LOCATION)
+        print ('        HALL_DESCRIPTION: ', HALL_DESCRIPTION)
+        print ('        ROOM_NUMBER: ', ROOM_NUMBER)
+        print ('\n')
 
         #Wait for response
         data_recieved = 0
         data_expected = len(send_string)
 
         while data_recieved < data_expected:
-            data = s.recv(1024)
-            data_recieved += len(data)
+            data = decrypt(s.recv(1024))
+            data_recieved += len(data.decode())
 
-            if (data == send_string):   
-                print 'Server Recieved OK'
+            if (data.decode() == send_string):   
+                print ('Server Recieved OK')
 
     finally:
-        print 'Data Transaction Completed' + '\n'
-        print '------------------------------------------------------------' + '\n'
+        print ('Data Transaction Completed' + '\n')
+        print ('------------------------------------------------------------' + '\n')
         s.close()
     
 def main():
@@ -137,29 +166,30 @@ def main():
     time.sleep(1)         #Time delay
 
     cycle_count = 0 #counts power cycles
+    data_count = 0 #counts data retrieval cycles
     
     while True:
         power_up()
-        time.sleep(5)         #Time delay
+        time.sleep(1)         #Time delay
         sensor_on()
+        print ('Acquiring Readings...')
         
-        time.sleep(3)         #Time delay
+        time.sleep(1)         #Time delay
 
-        #sends three sets of data to the server per power cycle
-        for num in range(0,10):
-            send_data()
-            time.sleep(0.5)
+        #sends one set of data to the server per power cycle
+        send_data()
         
         sensor_off()
         time.sleep(0.5)         #Time delay
         power_down()
 
         cycle_count += 1
-        print '\n' + '============================================================'
-        print 'CYCLE ' + str(cycle_count) + ' COMPLETED'
-        print '============================================================' + '\n'
+        print ('\n' + '============================================================')
+        print ('CYCLE ' + str(cycle_count) + ' COMPLETED')
+        print ('============================================================' + '\n')
 
-        time.sleep(4)
+        print ('Pausing...')
+        time.sleep(5)         #Time delay
 
 if __name__ == "__main__":
     main()
