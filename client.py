@@ -111,7 +111,7 @@ def get_voltage():
     for num in range(0,20):
         var = bus.read_i2c_block_data(address, 12, 2)   #Read 2 bytes of raw input from ADC
         voltage = (var[0] & 0x0F) * 256 + var[1]        #Perform 12-bit conversion
-        time.sleep(0.1)
+        time.sleep(0.01)                                #Time delay between calls
 
         #sum up the last ten readings
         if num >= 10:
