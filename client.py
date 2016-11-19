@@ -39,14 +39,7 @@ address = 0x48              #Use address found using "i2cdetect -y 1"
 HOST = '192.168.1.126'
 PORT = 4444
 BLOCK_SIZE = 16
-
-#Sensor Description
-SENSOR_NAME = 'MacEwan-42'
-SENSOR_BRAND = "Sharp"
-SENSOR_TYPE = 'Infrared Proximity'
-BIN_LOCATION = 'CCC Building 8, Third Floor'
-HALL_DESCRIPTION = 'Gym Main Entrance'
-ROOM_NUMBER = '8-330B'
+SENSOR_ID = '1'             #Assign unique ID to sensor
 
 # initialize sensor and ADC
 def power_init():
@@ -71,8 +64,6 @@ def power_up():
     GPIO.output(17, 1) #power up
     print ('POWERING UP ANALOG-DIGITAL CONVERTOR')
     time.sleep(1)
-    #bus.write_byte(address, 0b00001100) #power up
-    #print ('Powering UP Internal Reference')
 
 #disable ADC
 def power_down():
@@ -100,7 +91,7 @@ def decrypt(data):
     return unpad(cipher.decrypt(ndata))
 
 def makestring(measurement):
-    new_string =  measurement + '[' + SENSOR_NAME + '[' + SENSOR_BRAND + '[' + SENSOR_TYPE + '[' + BIN_LOCATION + '[' + HALL_DESCRIPTION + '[' + ROOM_NUMBER
+    new_string =  SENSOR_ID + '[' + measurement
     return new_string
 
 def get_voltage():
@@ -137,12 +128,7 @@ def send_data():
             
         print ('Sending:')
         print ('        SENSOR_READING: ', current)
-        print ('        SENSOR_NAME: ', SENSOR_NAME)
-        print ('        SENSOR_BRAND: ', SENSOR_BRAND)
-        print ('        SENSOR_TYPE: ', SENSOR_TYPE)
-        print ('        BIN_LOCATION: ', BIN_LOCATION)
-        print ('        HALL_DESCRIPTION: ', HALL_DESCRIPTION)
-        print ('        ROOM_NUMBER: ', ROOM_NUMBER)
+        print ('        SENSOR_ID: ', SENSOR_ID)
         print ('\n')
 
         #Wait for response
