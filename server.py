@@ -46,7 +46,7 @@ def decrypt(data):
     ndata = base64.b64decode(data)  
     return unpad(cipher.decrypt(ndata))
     
-def add_data(s_data, s_name, s_brand, s_type, l_name, h_desc, r_num):
+def add_data(s_did, s_data):
     #open database connection
     db = MySQLdb.connect("localhost","root","root","iot_waste_management" )
     db.autocommit(False)
@@ -55,15 +55,12 @@ def add_data(s_data, s_name, s_brand, s_type, l_name, h_desc, r_num):
     cursor = db.cursor()
     
     #SQL queries to INSERT records into the database
-    sql_1 = "INSERT INTO sensor_data(sensor_data) VALUES ('%d')" % (s_data)
-    sql_2 = "INSERT INTO sensor_location(garbage_bin_location_name, hallway_description, room_number, sensor_id) VALUES ('%s', '%s', '%s', LAST_INSERT_ID())" % (l_name, h_desc, r_num)
-    sql_3 = "INSERT INTO sensor_details(sensor_name, sensor_brand, sensor_type, sensor_id) VALUES ('%s', '%s', '%s', LAST_INSERT_ID())" % (s_name, s_brand, s_type)
-    
+    sql_1 = "INSERT INTO sensor_readings(sensor_details_id, sensor_reading) VALUES ('%d', '%d')" % (s_did, s_data)
+   
     try:
         # Execute the SQL commands
         cursor.execute(sql_1)
-        cursor.execute(sql_2)
-        cursor.execute(sql_3)
+        
         # Commit changes in the database
         db.commit()
         data_status = "Data Successfully Added To Database"
@@ -87,6 +84,78 @@ def add_data(s_data, s_name, s_brand, s_type, l_name, h_desc, r_num):
     db.close()
     return data_status
 
+def get_data(sid, table):
+    table_value = []    #initialize array for table row data
+    
+    #open database connection
+    db = MySQLdb.connect("localhost","root","root","iot_waste_management" )
+    db.autocommit(False)
+    
+    #prepare a cursor object using cursor() method
+    cursor = db.cursor()
+    
+    #SQL queries to INSERT records into the database       
+    if table == 0:
+        sql = "SELECT sensor_name, sensor_brand, sensor_type, sensor_model \
+        FROM sensor_details where sensor_details_id = '%d'" % (sid)
+        
+    if table == 1:
+        sql = "SELECT garbage_bin_location_name, building_number, hallway_description, \
+         room_number FROM sensor_location where sensor_location_id = '%d'" % (sid)
+    
+    try:
+        # Execute the SQL commands
+        cursor.execute(sql)
+      
+        # Fetch one row
+        results = cursor.fetchone()
+
+        #assign row to array
+        table_value = [row for row in results]
+    
+    #MySQL error handling
+    except MySQLdb.Error as e:
+        # handle a generic error condition
+        print('MySQLdb Error')
+        print(repr(e))
+        
+    except MySQLdb.Warning as e:
+        # handle warnings, if the cursor you're using raises them
+        print('MySQLdb Warning')
+        print (repr(e))
+    
+    except MySQLdb.DataError as e:
+        print('MySQLdb DataError')
+        print(repr(e))
+ 
+    except MySQLdb.InternalError as e:
+        print('MySQLdb InternalError')
+        print(repr(e))
+ 
+    except MySQLdb.IntegrityError as e:
+        print('MySQLdb IntegrityError')
+        print(repr(e))
+ 
+    except MySQLdb.OperationalError as e:
+        print('MySQLdb OperationalError')
+        print(repr(e))
+ 
+    except MySQLdb.NotSupportedError as e:
+        print('MySQLdb NotSupportedError')
+        print(repr(e))
+ 
+    except MySQLdb.ProgrammingError as e:
+        print('MySQLdb ProgrammingError')
+        print(repr(e))
+
+    except:
+        # Rollback in case there is any error
+        print ('Data Not Pulled From Database')
+        
+    # disconnect from server and print success message
+    db.close()
+    return table_value
+
 def strip_data(text):
     array = text.split('['.encode())
     return array  
@@ -94,27 +163,56 @@ def strip_data(text):
 def assign_data(message):
     #strip segments from data 
     list = strip_data(message)
-    SENSOR_DATA = int(list[0].decode())
-    SENSOR_NAME = list[1].decode()
-    SENSOR_BRAND = list[2].decode()
-    SENSOR_TYPE = list[3].decode()
-    BIN_LOCATION = list[4].decode()
-    HALL_DESCRIPTION = list[5].decode()
-    ROOM_NUMBER = list[6].decode()
+    
+    #assign segments
+    SENSOR_ID = int(list[0].decode())
+    SENSOR_DATA = int(list[1].decode())
+
     print ('\n')
     print ('Receiving:')
     print ('          SENSOR_READING: ', SENSOR_DATA)
+    print ('          SENSOR_ID: ', SENSOR_ID)
+            
+    #send sensor data to database
+    success = add_data(SENSOR_ID, SENSOR_DATA)    
+    
+    #retrieve sensor data from database
+    s_details(SENSOR_ID)
+    s_location(SENSOR_ID)
+    
+    return success
+
+def s_details(SENSOR_ID):
+    #retrieve sensor data from sensor_details table
+    table_details_array = get_data(SENSOR_ID,0)
+    
+    #assign array elements
+    SENSOR_NAME = table_details_array[0]
+    SENSOR_BRAND = table_details_array[1]
+    SENSOR_TYPE = table_details_array[2]
+    SENSOR_MODEL = table_details_array[3]
+    
+    print ('From:')
     print ('          SENSOR_NAME: ', SENSOR_NAME)
     print ('          SENSOR_BRAND: ', SENSOR_BRAND)
     print ('          SENSOR_TYPE: ', SENSOR_TYPE)
+    print ('          SENSOR_MODEL: ', SENSOR_MODEL)
+    
+def s_location(SENSOR_ID):
+    #retrieve sensor data from sensor_location table
+    table_location_array = get_data(SENSOR_ID,1)
+    
+    #assign array elements
+    BIN_LOCATION = table_location_array[0]
+    BUILDING_NUMBER = table_location_array[1]
+    HALL_DESCRIPTION = table_location_array[2]
+    ROOM_NUMBER = table_location_array[3]
+    
     print ('          BIN_LOCATION: ', BIN_LOCATION)
+    print ('          BUILDING_NUMBER: ', BUILDING_NUMBER)
     print ('          HALL_DESCRIPTION: ', HALL_DESCRIPTION)
     print ('          ROOM_NUMBER: ', ROOM_NUMBER)
     print ('\n')
-            
-    #send data to database
-    success = add_data(SENSOR_DATA, SENSOR_NAME, SENSOR_BRAND, SENSOR_TYPE, BIN_LOCATION, HALL_DESCRIPTION, ROOM_NUMBER)
-    return success
 
 def recv_data():
     #create socket

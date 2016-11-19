@@ -1,0 +1,70 @@
+CREATE TABLE sensor_location (
+	sensor_location_id INT NOT NULL AUTO_INCREMENT,
+	garbage_bin_location_name VARCHAR(255) NOT NULL,
+	building_number VARCHAR(255) NOT NULL,
+	hallway_description VARCHAR(255) NOT NULL,
+	room_number VARCHAR(255) NOT NULL,
+	PRIMARY KEY (sensor_location_id)
+) ENGINE = InnoDB ;
+
+CREATE TABLE sensor_details (
+     	sensor_details_id INT NOT NULL AUTO_INCREMENT,
+	sensor_location_id INT NOT NULL,
+	sensor_name VARCHAR(255) NOT NULL,
+	sensor_brand VARCHAR(255) NOT NULL,
+     	sensor_type VARCHAR(255) NOT NULL,
+	sensor_model VARCHAR(255) NOT NULL,
+     	PRIMARY KEY (sensor_details_id),
+	FOREIGN KEY (sensor_location_id)
+	REFERENCES sensor_location(sensor_location_id)
+) ENGINE = InnoDB ;
+
+CREATE TABLE sensor_readings (
+	sensor_readings_id INT NOT NULL AUTO_INCREMENT,
+	sensor_details_id INT NOT NULL,
+	sensor_reading INT NOT NULL,
+	time_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+     	PRIMARY KEY (sensor_readings_id),
+	FOREIGN KEY (sensor_details_id)
+	REFERENCES sensor_details(sensor_details_id)
+) ENGINE = InnoDB ;
+
+insert into sensor_location 
+(garbage_bin_location_name, building_number, hallway_description, room_number) 
+values 
+('Macewan-1', '7A', 'Northwest', 'C334');
+
+insert into sensor_location 
+(garbage_bin_location_name, building_number, hallway_description, room_number) 
+values 
+('Macewan-2', '6', 'South', '221');
+
+insert into sensor_details 
+(sensor_location_id, sensor_name, sensor_brand, sensor_type, sensor_model) 
+values
+(1, 'S-PX01', 'Sharp', 'Infrared Proximity', 'GX207FDLS05');
+
+insert into sensor_details 
+(sensor_location_id, sensor_name, sensor_brand, sensor_type, sensor_model) 
+values
+(2, 'C-PX02', 'Canon', 'Audio', 'CPX672HEJS');
+
+insert into sensor_readings 
+(sensor_details_id, sensor_reading)
+values 
+(1, 999);
+
+
+SET FOREIGN_KEY_CHECKS = 0;
+drop table if exists sensor_readings;
+drop table if exists sensor_location;
+drop table if exists sensor_details;
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+CREATE DATABASE iot_waste_management;
+USE iot_waste_management
+
+
+select sensor_readings.sensor_readings_id, sensor_readings.sensor_reading, sensor_location.garbage_bin_location_name, sensor_location.hallway_description, sensor_location.building_number, sensor_location.room_number, sensor_details.sensor_name, sensor_details.sensor_brand, sensor_details.sensor_type, sensor_details.sensor_model from sensor_readings, sensor_location, sensor_details where 
+sensor_readings.sensor_details_id=sensor_details.sensor_details_id and  sensor_location.sensor_location_id=sensor_details.sensor_location_id;
