@@ -22,7 +22,7 @@ import socket
 import MySQLdb
 import time
 
-HOST = '192.168.1.126'
+HOST = '192.168.56.101'
 PORT = 4444
 BLOCK_SIZE = 16
 
