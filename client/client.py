@@ -109,11 +109,12 @@ def get_voltage():
             avg_voltage = avg_voltage + voltage
 
     #return the average of the last ten readings
-    return str(int(avg_voltage/10))
+    return int(avg_voltage/10)
 
 def send_data():
-    current = get_voltage()
-
+    #convert voltage to distance
+    current = str(int(pow(10, 7) * pow(get_voltage(), -1.8)))
+                  
     try:
         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)    #set up socket
         s.connect((HOST, PORT)) #connect to IP on PORT specified
@@ -127,7 +128,7 @@ def send_data():
         s.sendall(ciphertext + '\n'.encode())
             
         print ('Sending:')
-        print ('        SENSOR_READING: ', current)
+        print ('        SENSOR_READING: ', current + 'cm')
         print ('        SENSOR_ID: ', SENSOR_ID)
         print ('\n')
 
