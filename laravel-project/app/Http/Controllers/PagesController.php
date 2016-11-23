@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Location;
+use App\Readings;
 use App\Sensor;
 use App\Http\Requests;
 
@@ -11,13 +13,20 @@ class PagesController extends Controller
     //
     public function index()
     {
-        $sensors = Sensor::all();
+        $locations = Location::with('readings','sensors')->get();
+        $readings = Readings::with('sensors')->get();
+        $sensors = Sensor::with('readings','location')->get();
 
-        return view('pages.home', compact('sensors'));
+
+        return view('pages.home', compact('locations','readings','sensors'));
     }
 
-    public function show()
+    public function show($id)
     {
-        return view('pages.home');
+        $locations = Location::with('readings','sensors')->get();
+        $readings = Readings::with('sensors')->get();
+        $sensor = Sensor::find($id);
+
+        return view('pages.show', compact('locations','readings','sensor'));
     }
 }

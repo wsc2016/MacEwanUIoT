@@ -48,14 +48,15 @@ def decrypt(data):
     
 def add_data(s_did, s_data):
     #open database connection
-    db = MySQLdb.connect("localhost","root","root","iot_waste_management" )
+    db = MySQLdb.connect("localhost","jharvard","crimson","iot_waste_management" )
     db.autocommit(False)
     
     #prepare a cursor object using cursor() method
     cursor = db.cursor()
     
     #SQL queries to INSERT records into the database
-    sql_1 = "INSERT INTO sensor_readings(sensor_details_id, sensor_reading) VALUES ('%d', '%d')" % (s_did, s_data)
+    sql_1 = "INSERT INTO sensor_readings(sensor_details_id, sensor_reading) \
+            VALUES ('%d', '%d')" % (s_did, s_data)
    
     try:
         # Execute the SQL commands
@@ -88,7 +89,7 @@ def get_data(sid, table):
     table_value = []    #initialize array for table row data
     
     #open database connection
-    db = MySQLdb.connect("localhost","root","root","iot_waste_management" )
+    db = MySQLdb.connect("localhost","jharvard","crimson","iot_waste_management" )
     db.autocommit(False)
     
     #prepare a cursor object using cursor() method
@@ -170,7 +171,7 @@ def assign_data(message):
 
     print ('\n')
     print ('Receiving:')
-    print ('          SENSOR_READING: ', SENSOR_DATA)
+    print ('          SENSOR_READING: ', str(SENSOR_DATA) + 'cm')
     print ('          SENSOR_ID: ', SENSOR_ID)
             
     #send sensor data to database

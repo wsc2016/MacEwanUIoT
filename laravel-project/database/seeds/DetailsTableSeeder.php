@@ -29,38 +29,6 @@ class DetailsTableSeeder extends Seeder
         ]);
 
         DB::table('sensor_details')->insert([
-            'sensor_name' => 'CVBX-03',
-            'sensor_brand' => 'Hitachi',
-            'sensor_type' => 'Audio',
-            'sensor_model' => 'HPZ9237FDF738233',
-            'sensor_location_id' => '1'
-        ]);
-
-        DB::table('sensor_details')->insert([
-            'sensor_name' => 'FGNB-04',
-            'sensor_brand' => 'Panasonic',
-            'sensor_type' => 'Digital Distance',
-            'sensor_model' => 'PZ9237FWF73823076',
-            'sensor_location_id' => '2'
-        ]);
-
-        DB::table('sensor_details')->insert([
-            'sensor_name' => 'DGNB-05',
-            'sensor_brand' => 'BenQ',
-            'sensor_type' => 'Proximity Distance',
-            'sensor_model' => 'XZ9237FWF73823073',
-            'sensor_location_id' => '1'
-        ]);
-
-        DB::table('sensor_details')->insert([
-            'sensor_name' => 'HGNB-06',
-            'sensor_brand' => 'Mitsubishi',
-            'sensor_type' => 'Audio',
-            'sensor_model' => 'BZ9237FWF73823071',
-            'sensor_location_id' => '2'
-        ]);
-
-        DB::table('sensor_details')->insert([
             'sensor_name' => 'AGNB-07',
             'sensor_brand' => 'RCA',
             'sensor_type' => 'Analog Distance',

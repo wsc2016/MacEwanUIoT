@@ -20,11 +20,11 @@ class ReadingsTableSeeder extends Seeder
         $sensors = DB::table('sensor_details')->lists('sensor_details_id');
         //$ids= Model::get()->lists('id');
         //$sensors = Sensor::all()->lists('sensor_details_id');
-        foreach(range(1,50) as $index){
+        foreach(range(1,30) as $index){
 
             DB::table('sensor_readings')->insert([
                 'sensor_details_id' => $faker->randomElement($sensors),
-                'sensor_reading' => $faker->numberBetween($min = 575, $max = 3750),
+                'sensor_reading' => $faker->numberBetween($min = 15, $max = 130),
                 'time_created' => $faker->dateTimeBetween($startDate = '-1 month', $endDate = 'now')
             ]);
 
