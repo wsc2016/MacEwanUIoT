@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class LocationTableSeeder extends Seeder
 {
@@ -11,6 +12,31 @@ class LocationTableSeeder extends Seeder
      */
     public function run()
     {
+        $faker = Faker::create();
+        foreach (range(1, 40) as $index) {
+
+            DB::table('sensor_location')->insert([
+                'garbage_bin_location_name' => $faker->randomElement($array = array('FoodCourt', 'Nursing',
+                        'Administration', 'CompSci', 'Physics', 'Psychology', 'Chemistry', 'Biology', 'Science',
+                        'Library', 'Parking', 'Gymnasium', 'Arts')). '-' . $index,
+                'building_number' => $faker->randomElement($array = array('5', '6', '7', '8', '9')),
+                'hallway_description' => $faker->randomElement($array = array('North West', 'South West', 'North East',
+                        'South East', 'North', 'South', 'West', 'East')).' '
+                    .$faker->randomElement($array = array('Entrance', 'Exit', 'Corridor')),
+                'room_number' => $faker->numberBetween($min = 100, $max = 399)
+            ]);
+        }
+
+
+
+
+
+
+
+
+
+
+        /*
         //
         DB::table('sensor_location')->insert([
             'garbage_bin_location_name' => 'FoodCourt-1',
@@ -39,5 +65,6 @@ class LocationTableSeeder extends Seeder
             'hallway_description' => 'Gym Back Entrance',
             'room_number' => '232G'
         ]);
+        */
     }
 }

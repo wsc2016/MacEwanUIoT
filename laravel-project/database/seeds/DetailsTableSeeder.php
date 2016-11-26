@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class DetailsTableSeeder extends Seeder
 {
@@ -11,6 +12,29 @@ class DetailsTableSeeder extends Seeder
      */
     public function run()
     {
+
+        $faker = Faker::create();
+        // following line retrieve all the user_ids from DB
+        //$sensors = Sensor::lists('sensor_details_id')->All();
+        //$details = DB::table('sensor_details')->lists('sensor_details_id');
+        //$location = DB::table('sensor_location')->lists('sensor_location_id');
+        //$ids= Model::get()->lists('id');
+        //$sensors = Sensor::all()->lists('sensor_details_id');
+        foreach (range(1, 40) as $index) {
+
+            DB::table('sensor_details')->insert([
+                'sensor_name' => $faker->word . '-' . $index,
+                'sensor_brand' => $faker->randomElement($array = array('Sharp', 'JVC', 'Panasonic', 'Canon', 'Hitachi', 'Mitsubishi', 'RCA')),
+                'sensor_type' => $faker->randomElement($array = array('Analog Distance', 'Digital Distance', 'Audio', 'Infrared Proximity', 'Infrared Motion')),
+                'sensor_model' => $faker->isbn10,
+                'sensor_location_id' => $index
+            ]);
+
+        }
+
+
+        /*
+
         //
         DB::table('sensor_details')->insert([
             'sensor_name' => 'PGMX-01',
@@ -43,6 +67,7 @@ class DetailsTableSeeder extends Seeder
             'sensor_model' => 'MZ9237FWF73823074',
             'sensor_location_id' => '4'
         ]);
+        */
 
     }
 }

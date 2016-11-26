@@ -23,5 +23,6 @@
 //});
 
 Route::get('/', 'PagesController@index');
+Route::get('/about', 'PagesController@about');
+Route::get('/trend', 'PagesController@trend');
 Route::get('/{sensor}', 'PagesController@show');
-

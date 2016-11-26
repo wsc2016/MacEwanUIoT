@@ -7,6 +7,8 @@ use App\Location;
 use App\Readings;
 use App\Sensor;
 use App\Http\Requests;
+use App\Http\Controllers\Controller;
+
 
 class PagesController extends Controller
 {
@@ -17,8 +19,22 @@ class PagesController extends Controller
         $readings = Readings::with('sensors')->get();
         $sensors = Sensor::with('readings','location')->get();
 
-
         return view('pages.home', compact('locations','readings','sensors'));
+    }
+
+    public function about()
+    {
+        return view('pages.about');
+    }
+
+    public function trend()
+    {
+        $locations = Location::with('readings','sensors')->get();
+        $readings = Readings::with('sensors')->get();
+        $sensors = Sensor::with('readings','location')->get();
+
+        return view('pages.trend', compact('locations','readings','sensors'));
+
     }
 
     public function show($id)
@@ -29,4 +45,6 @@ class PagesController extends Controller
 
         return view('pages.show', compact('locations','readings','sensor'));
     }
+
+
 }
