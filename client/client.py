@@ -113,7 +113,7 @@ def get_voltage():
 
 def send_data():
     #convert voltage to distance
-    current = str(int(pow(10, 7) * pow(get_voltage(), -1.8)))
+    current = str(155 - int(pow(10, 7) * pow(get_voltage(), -1.8)))
                   
     try:
         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)    #set up socket
