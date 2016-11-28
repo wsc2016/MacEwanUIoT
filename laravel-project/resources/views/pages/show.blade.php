@@ -2,9 +2,10 @@
 <html>
 <head>
 
-    <title>Current Capacity</title>
+    <title>MacEwan University Waste Management</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -33,7 +34,7 @@
             <a class="navbar-brand" href="/">Waste Management</a>
         </div>
         <ul class="nav navbar-nav">
-            <li class="active"><a href="/">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="trend">Trend</a></li>
             <li><a href="about">About</a></li>
         </ul>
@@ -42,7 +43,7 @@
 
 
 <div class="container">
-    <div class="mx-auto" style="width:100%;">
+    <div class="mx-auto" style="width:95%;">
         <!-- <canvas id="LineWithLine" width="400" height="300"></canvas> -->
         <canvas id="myChart"></canvas>
     </div>
@@ -70,7 +71,7 @@
 
     @foreach ($readings as $reading)
     @if ($reading->sensor_details_id == $sensor->sensor_details_id)
-        sensorReadings.push(100 - parseInt(parseInt('{{ $reading->sensor_reading }}')/145 * 100));
+        sensorReadings.push(parseInt((parseInt('{{ $reading->sensor_reading }}')-5)/145 * 100));
         timeCreated.push('{{ $reading->time_created }}');
         fillLine.push(100);
     @endif
@@ -155,6 +156,7 @@
                                 fill: false,
                                 backgroundColor: 'rgb(255,0,0)',
                                 borderColor: 'rgb(255,0,0)',
+                                pointRadius: 0
 
 
 
@@ -237,7 +239,7 @@
 </script>
 
 
-<footer class="footer">
+<footer class="panel-footer panel-custom">
     <div class="container">
         <p class="text-muted">MacEwan University 2016</p>
     </div>

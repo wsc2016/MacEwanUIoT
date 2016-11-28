@@ -2,9 +2,10 @@
 <html>
 <head>
 
-    <title>Current Capacity</title>
+    <title>MacEwan University Waste Management</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -104,7 +105,7 @@
 
     @foreach ($sensors as $sensor)
         sensorName.push('{{ $sensor->sensor_name }}');
-        @foreach ($readings as $reading)
+        @foreach ($sensor->readings as $reading)
             @if ($reading->sensor_details_id == $sensor->sensor_details_id)
             readingOne = '{{ $reading->sensor_reading }}';
             @endif
@@ -219,7 +220,7 @@
     });
 */
             <?php for( $i = 0; $i<$count; $i++ ) { ?>
-            <?php echo 'dataSet.push({ labels: ["Filled","Remaining"],datasets: [{ data: [100 - parseInt((sensorReadings['.$i.']/145) * 100), parseInt((sensorReadings['.$i.']/145) * 100)],label:locationInfo1['.$i.'],backgroundColor: ["#DC143C","#e5ffe8"], hoverBackgroundColor: ["#DC143C","#e5ffe8"]}] });' ?>
+            <?php echo 'dataSet.push({ labels: ["Filled","Remaining"],datasets: [{ data: [parseInt(((sensorReadings['.$i.']-5)/145) * 100), 100 - parseInt(((sensorReadings['.$i.']-5)/145) * 100)],label:locationInfo1['.$i.'],backgroundColor: ["#DC143C","#e5ffe8"], hoverBackgroundColor: ["#DC143C","#e5ffe8"]}] });' ?>
             <?php } ?>
 
             <?php for( $i = 0; $i<$count; $i++ ) { ?>
@@ -268,7 +269,7 @@
 */
 </script>
 
-<footer class="footer">
+<footer class="panel-footer panel-custom">
     <div class="container">
         <p class="text-muted">MacEwan University 2016</p>
     </div>
