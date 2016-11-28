@@ -117,7 +117,7 @@ def send_data():
                   
     try:
         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)    #set up socket
-        s.connect((HOST, PORT)) #connect to IP on PORT specified
+        s.connect((HOST, PORT)) #connect to IP on PORT specified            
         print ('Connecting to ', HOST, ' on port ', PORT)
         print ('\n')
 
@@ -142,7 +142,17 @@ def send_data():
 
             if (data.decode() == send_string):   
                 print ('Server Recieved OK')
+                
+    except socket.error:
+        s.close()
+        print ('Could not open socket')
+        sys.exit(1)
 
+    except socket.timeout:
+        s.close()
+        print ('Connection to socket timed out')
+        sys.exit(1)
+        
     finally:
         print ('Data Transaction Completed' + '\n')
         print ('------------------------------------------------------------' + '\n')
