@@ -9,13 +9,21 @@
 # Author: Walter Chelliah
 # October/November 2016
 #
-# Mean Sensor Values:
+# Mean Sensor Values(remaining capacity):
 #                       5cm:    3750
 #                       25cm:   1469
 #                       50cm:   950
 #                       75cm:   830
 #                       100cm:  698
 #                       150cm:  575
+#
+# Mean Sensor Values(filled capacity):
+#                       5cm:    575
+#                       25cm:   698
+#                       50cm:   830
+#                       75cm:   950
+#                       100cm:  1469
+#                       150cm:  3750
 #
 # Description:
 #       This is a client-side application that reads data
@@ -36,7 +44,7 @@ import socket
 
 bus = smbus.SMBus(1)        #Sets I/O to I2C1
 address = 0x48              #Use address found using "i2cdetect -y 1"
-HOST = '192.168.1.126'
+HOST = '192.168.1.126'      #Use IP of server location
 PORT = 4444
 BLOCK_SIZE = 16
 SENSOR_ID = '1'             #Assign unique ID to sensor
@@ -107,13 +115,13 @@ def get_voltage():
         #sum up the last ten readings
         if num >= 10:
             avg_voltage = avg_voltage + voltage
-
+            
     #return the average of the last ten readings
     return int(avg_voltage/10)
 
 def send_data():
-    #convert voltage to distance
-    current = str(155 - int(pow(10, 7) * pow(get_voltage(), -1.8)))
+    #convert voltage to distance - based on 5 calibration marks of FILLED capacity
+    current = str(155 - (int(pow(10, 7) * pow(get_voltage(), -1.8)) + 30))
                   
     try:
         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)    #set up socket
@@ -141,7 +149,7 @@ def send_data():
             data_recieved += len(data.decode())
 
             if (data.decode() == send_string):   
-                print ('Server Recieved OK')
+                print ('Server Received OK')
                 
     except socket.error:
         s.close()
