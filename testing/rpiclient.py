@@ -36,7 +36,7 @@ import socket
 
 #bus = smbus.SMBus(1)        #Sets I/O to I2C1
 #address = 0x48              #Use address found using "i2cdetect -y 1"
-HOST = '192.168.1.126'
+HOST = 'localhost'
 PORT = 4444
 BLOCK_SIZE = 16
 SENSOR_ID = '1'             #Assign unique ID to sensor
@@ -142,7 +142,7 @@ def send_data():
             data_recieved += len(data.decode())
 
             if (data.decode() == send_string):   
-                print ('Server Recieved OK')
+                print ('Server Received OK')
                 
     except socket.error:
         s.close()

@@ -16,18 +16,21 @@
 #
 ########################################################################################
 
+#!/usr/bin/python3
+
 from Crypto.Cipher import AES
+import MySQLdb
 import base64
 import socket
-import MySQLdb
 import time
 
-HOST = '192.168.56.101'
+HOST = '0.0.0.0'    #set this to 0.0.0.0 when receiving within VirtualBox
 PORT = 4444
 BLOCK_SIZE = 16
 
 def pad(s):
-    return s.decode() + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
+    return s.decode() + \
+    (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
     
 def unpad(s):
     return s[:-ord(s[len(s)-1:])]
@@ -83,6 +86,7 @@ def add_data(s_did, s_data):
         
     # disconnect from server and print success message
     db.close()
+        
     return data_status
 
 def get_data(sid, table):
@@ -155,6 +159,7 @@ def get_data(sid, table):
         
     # disconnect from server and print success message
     db.close()
+        
     return table_value
 
 def strip_data(text):
@@ -254,7 +259,8 @@ def recv_data():
                 print ('Data Transaction Completed' + '\n')
                 print ('===========================================================')
                 print ('CYCLE ' + str(cycle_count) + ' COMPLETED')
-                print ('===========================================================' + '\n')
+                print ('===========================================================' + \
+                '\n')
             else:
                 print ('No further data from ', client_address)
                 break

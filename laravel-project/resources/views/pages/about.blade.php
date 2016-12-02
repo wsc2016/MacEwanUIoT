@@ -41,10 +41,36 @@
 </nav>
 
 <div class="container">
-    <div class="mx-auto" style="width:95%;height:100%">
-        About content goes here
+    <div class="mx-auto" style="height:100%">
+        <p>The MacEwan University Waste Management System is a working demonstration of resource management
+            and sustainability featuring IoT(The Internet Of Things) connectivity.</p>
+
+        <p>Utilizing low cost infrared proximity sensors and Raspberry Pi hardware, capacity data of waste
+            bins is detected, encrypted and sent through client nodes to a central server.  This server inputs
+            the data into a database and provides an administrative view of all the connected client nodes via
+            a web interface.</p>
+
+        <p>Along with data logs and statistical information, the MacEwan University Waste Management System
+            provides the information required to efficiently and effectively manage waste collection resources.</p>
     </div>
 </div>
+
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
+<div style="height:100%">&nbsp;</div>
 
 <footer class="panel-footer panel-custom">
     <div class="container">

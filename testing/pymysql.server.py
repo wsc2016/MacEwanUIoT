@@ -16,18 +16,26 @@
 #
 ########################################################################################
 
+#!/usr/bin/python3
+
 from Crypto.Cipher import AES
+
+
+import pymysql
+#pymysql.install_as_MySQLdb()
+#import MySQLdb
+
 import base64
 import socket
-import MySQLdb
 import time
 
-HOST = '0.0.0.0'
+HOST = '0.0.0.0'    #set this to 0.0.0.0 when receiving within VirtualBox
 PORT = 4444
 BLOCK_SIZE = 16
 
 def pad(s):
-    return s.decode() + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
+    return s.decode() + \
+    (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
     
 def unpad(s):
     return s[:-ord(s[len(s)-1:])]
@@ -48,113 +56,125 @@ def decrypt(data):
     
 def add_data(s_did, s_data):
     #open database connection
-    db = MySQLdb.connect("localhost","jharvard","crimson","iot_waste_management" )
-    db.autocommit(False)
+    connection = pymysql.connect(host='localhost',port=3306,user='jharvard',passwd='crimson',db='iot_waste_management')
+    #conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='', db='mysql')
+    #db.autocommit(False)
     
     #prepare a cursor object using cursor() method
-    cursor = db.cursor()
+    #cursor = db.cursor()
     
     #SQL queries to INSERT records into the database
-    sql_1 = "INSERT INTO sensor_readings(sensor_details_id, sensor_reading) \
-            VALUES ('%d', '%d')" % (s_did, s_data)
    
     try:
+        with connection.cursor() as cursor:
         # Execute the SQL commands
-        cursor.execute(sql_1)
+            sql_1 = "INSERT INTO sensor_readings(sensor_details_id, sensor_reading) \
+                VALUES ('%d', '%d')" % (s_did, s_data)
+
+            cursor.execute(sql_1)
         
         # Commit changes in the database
-        db.commit()
+        connection.commit()
         data_status = "Data Successfully Added To Database"
     
     #MySQL error handling
-    except MySQLdb.IntegrityError as e: 
+    #except MySQLdb.IntegrityError as e: 
         # handle a specific error condition
-        print (repr(e))
-    except MySQLdb.Error as e:
+        #print (repr(e))
+    #except MySQLdb.Error as e:
         # handle a generic error condition
-        print (repr(e))
-    except MySQLdb.Warning as e:
+        #print (repr(e))
+    #except MySQLdb.Warning as e:
         # handle warnings, if the cursor you're using raises them
-        print (repr(e))
-    except:
+        #print (repr(e))
+    #except:
         # Rollback in case there is any error
-        db.rollback()
-        data_status = "Data Not Added To Database"
+        #connection.rollback()
+        #data_status = "Data Not Added To Database"
         
     # disconnect from server and print success message
-    db.close()
+    finally:
+        connection.close()
+        
     return data_status
 
 def get_data(sid, table):
     table_value = []    #initialize array for table row data
     
     #open database connection
-    db = MySQLdb.connect("localhost","jharvard","crimson","iot_waste_management" )
-    db.autocommit(False)
+    connection = pymysql.connect(host='localhost',port=3306,user='jharvard',passwd='crimson',db='iot_waste_management')
+
+    #connection = pymysql.connect("localhost","jharvard","crimson","iot_waste_management" )
+    #db.autocommit(False)
     
     #prepare a cursor object using cursor() method
-    cursor = db.cursor()
+    #cursor = db.cursor()
     
-    #SQL queries to INSERT records into the database       
-    if table == 0:
-        sql = "SELECT sensor_name, sensor_brand, sensor_type, sensor_model \
-        FROM sensor_details where sensor_details_id = '%d'" % (sid)
-        
-    if table == 1:
-        sql = "SELECT garbage_bin_location_name, building_number, hallway_description, \
-         room_number FROM sensor_location where sensor_location_id = '%d'" % (sid)
     
     try:
-        # Execute the SQL commands
-        cursor.execute(sql)
-      
-        # Fetch one row
-        results = cursor.fetchone()
+        with connection.cursor() as cursor:
+        #SQL queries to INSERT records into the database       
+            if table == 0:
+                sql = "SELECT sensor_name, sensor_brand, sensor_type, sensor_model \
+                FROM sensor_details where sensor_details_id = '%d'" % (sid)
+        
+            if table == 1:
+                sql = "SELECT garbage_bin_location_name, building_number, hallway_description, \
+                room_number FROM sensor_location where sensor_location_id = '%d'" % (sid)
 
-        #assign row to array
-        table_value = [row for row in results]
+        
+            # Execute the SQL commands
+            cursor.execute(sql)
+      
+            # Fetch one row
+            results = cursor.fetchone()
+
+            #assign row to array
+            table_value = [row for row in results]
     
     #MySQL error handling
-    except MySQLdb.Error as e:
+    #except MySQLdb.Error as e:
         # handle a generic error condition
-        print('MySQLdb Error')
-        print(repr(e))
+        #print('MySQLdb Error')
+        #print(repr(e))
         
-    except MySQLdb.Warning as e:
+    #except MySQLdb.Warning as e:
         # handle warnings, if the cursor you're using raises them
-        print('MySQLdb Warning')
-        print (repr(e))
+        #print('MySQLdb Warning')
+        #print (repr(e))
     
-    except MySQLdb.DataError as e:
-        print('MySQLdb DataError')
-        print(repr(e))
+    #except MySQLdb.DataError as e:
+        #print('MySQLdb DataError')
+        #print(repr(e))
  
-    except MySQLdb.InternalError as e:
-        print('MySQLdb InternalError')
-        print(repr(e))
+    #except MySQLdb.InternalError as e:
+        #print('MySQLdb InternalError')
+        #print(repr(e))
  
-    except MySQLdb.IntegrityError as e:
-        print('MySQLdb IntegrityError')
-        print(repr(e))
+    #except MySQLdb.IntegrityError as e:
+        #print('MySQLdb IntegrityError')
+        #print(repr(e))
  
-    except MySQLdb.OperationalError as e:
-        print('MySQLdb OperationalError')
-        print(repr(e))
+    #except MySQLdb.OperationalError as e:
+        #print('MySQLdb OperationalError')
+        #print(repr(e))
  
-    except MySQLdb.NotSupportedError as e:
-        print('MySQLdb NotSupportedError')
-        print(repr(e))
+    #except MySQLdb.NotSupportedError as e:
+        #print('MySQLdb NotSupportedError')
+        #print(repr(e))
  
-    except MySQLdb.ProgrammingError as e:
-        print('MySQLdb ProgrammingError')
-        print(repr(e))
+    #except MySQLdb.ProgrammingError as e:
+        #print('MySQLdb ProgrammingError')
+        #print(repr(e))
 
-    except:
+    #except:
         # Rollback in case there is any error
-        print ('Data Not Pulled From Database')
+        #print ('Data Not Pulled From Database')
         
     # disconnect from server and print success message
-    db.close()
+    finally:
+        connection.close()
+        
     return table_value
 
 def strip_data(text):
@@ -254,7 +274,8 @@ def recv_data():
                 print ('Data Transaction Completed' + '\n')
                 print ('===========================================================')
                 print ('CYCLE ' + str(cycle_count) + ' COMPLETED')
-                print ('===========================================================' + '\n')
+                print ('===========================================================' + \
+                '\n')
             else:
                 print ('No further data from ', client_address)
                 break

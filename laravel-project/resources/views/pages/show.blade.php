@@ -44,10 +44,12 @@
 
 <div class="container">
     <div class="mx-auto" style="width:95%;">
-        <!-- <canvas id="LineWithLine" width="400" height="300"></canvas> -->
+        <!-- generate chart -->
         <canvas id="myChart"></canvas>
     </div>
 </div>
+
+<div style="height:100%">&nbsp;</div>
 
 <script>
     var sensorName = '{{ $sensor->sensor_name }}';
@@ -59,7 +61,7 @@
     fillLine.push(100);
 
 
-
+    //load location data into array
     @foreach ($locations as $location)
     @if ($location->sensor_location_id == $sensor->sensor_location_id)
     locationInfo.push('{{ $location->garbage_bin_location_name }}');
@@ -69,6 +71,7 @@
     @endif
     @endforeach
 
+    //load sensor reading data into array
     @foreach ($readings as $reading)
     @if ($reading->sensor_details_id == $sensor->sensor_details_id)
         sensorReadings.push(parseInt((parseInt('{{ $reading->sensor_reading }}')-5)/145 * 100));
@@ -76,7 +79,6 @@
         fillLine.push(100);
     @endif
             @endforeach
-
 
             window.chartColors = {
         red: 'rgb(255, 99, 132)',
@@ -109,6 +111,7 @@
         'rgba(54, 162, 235, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(231,233,237, 0.2)', 'rgba(140, 114, 114, 0.2)', 'rgba(114, 140, 0, 0.2)',
         'rgba(14, 11, 114, 0.2)'];
 
+    //load chart data
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
                 options: {
@@ -158,83 +161,12 @@
                                 borderColor: 'rgb(255,0,0)',
                                 pointRadius: 0
 
-
-
-
                     }]
                 },
 
 
             }
     );
-
-
-    ////////
-/*
-    var data = {
-        labels: timeCreated.sort(),
-        datasets: [{
-            label: sensorName,
-            data: sensorReadings,
-            fillColor: colorChoiceAlpha[i],
-            strokeColor: colorChoice[i],
-            pointColor: colorChoice[i],
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: colorChoice[i]
-        }]
-    };
-
-    var ctx = document.getElementById("LineWithLine").getContext("2d");
-
-    Chart.types.Line.extend({
-        name: "LineWithLine",
-        initialize: function () {
-            Chart.types.Line.prototype.initialize.apply(this, arguments);
-        },
-        draw: function () {
-            Chart.types.Line.prototype.draw.apply(this, arguments);
-
-            //var point = this.datasets[0].points[this.options.lineAtIndex];
-            //var scale = this.scale;
-            var firstPoint = this.datasets[0].points[0];
-            //var scale = this.scale
-            //console.log(this);
-
-            // draw line
-            this.chart.ctx.save();
-            this.chart.ctx.beginPath();
-            //this.chart.ctx.moveTo(scale.startPoint+12, point.y);
-            this.chart.ctx.strokeStyle = '#ff0000';
-            this.chart.ctx.strokeColor = '#ff0000';
-            //this.chart.ctx.moveTo(firstPoint.startPoint, this.scale.calculateY(this.options.maxLevel));
-            //this.chart.ctx.lineTo(this.chart.width, scale.Endpoint);
-            this.chart.ctx.moveTo(firstPoint.x, this.scale.calculateY(this.options.maxLevel));
-            this.chart.ctx.lineTo(this.chart.width, this.scale.calculateY(this.options.maxLevel));
-
-            //this.chart.ctx.moveTo(scale.startPoint, scale.calculateY(this.options.maxLevel) );
-            //this.chart.ctx.lineTo(scale.endPoint, scale.calculateY(this.options.maxLevel));
-            //this.chart.ctx.lineTo(this.chart.width, point.y);
-            this.chart.ctx.stroke();
-            this.chart.ctx.closePath();
-
-            // write TODAY
-            this.chart.ctx.textAlign = 'center';
-            this.chart.ctx.fillText("Maximum Capacity", this.chart.width-65, this.scale.calculateY(this.options.maxLevel)+10);
-
-            this.chart.ctx.restore();
-        }
-    });
-
-    new Chart(ctx).LineWithLine(data, {
-        //datasetFill : false,
-        maxLevel: 90,
-        //lineAtIndex: 2
-    });
-*/
-
-
-
 
 </script>
 

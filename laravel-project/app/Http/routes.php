@@ -11,17 +11,6 @@
 |
 */
 
-
-//Route::get('/', function () {
-//    return 'hello iot_waste_management';
-    //return view('welcome');
-//});
-
-//Route::get('about', function () {
-//    return view('pages.about');
-    //return view('welcome');
-//});
-
 Route::get('/', 'PagesController@index');
 Route::get('/about', 'PagesController@about');
 Route::get('/trend', 'PagesController@trend');

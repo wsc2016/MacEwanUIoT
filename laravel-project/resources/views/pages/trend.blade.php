@@ -46,6 +46,8 @@
     </div>
 </div>
 
+<div style="height:100%">&nbsp;</div>
+
 <script>
     var locationName = [];
     var nowDate = new Date();
@@ -67,30 +69,34 @@
     var currReading = 0;
     var readCount = 0;
 
-var today = new Date();
-var currMonth = today.getMonth();
-var months= [];
-var newMonthList = [];
-var monthList = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
-for (var i = 0; i < 6; i++) {
-    months.push(currMonth);
-    newMonthList.push(monthList[currMonth]);
-    currMonth--;
-    if (currMonth < 0) {
-    currMonth = 11;
-    }
-};
+    //get current month and generate past list of months
+    var today = new Date();
+    var currMonth = today.getMonth();
+    var months= [];
+    var newMonthList = [];
+    var monthList = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+    for (var i = 0; i < 6; i++) {
+        months.push(currMonth);
+        newMonthList.push(monthList[currMonth]);
+        currMonth--;
+            if (currMonth < 0) {
+                currMonth = 11;
+            }
+    };
 
+    //add location data into array
     <?php $locationCount = 0; ?>
         @foreach ($locations as $location)
             locationName.push('{{ $location->garbage_bin_location_name }}');
             <?php $locationCount++; ?>
 
+                //get average readings for each month and add to arrays
                 @foreach ($location->readings as $reading)
                     @if ($location->sensor_location_id == $reading->sensor_details_id)
 
                         nowDate = new Date('{{ $reading->time_created }}');
                         compMonth = nowDate.getMonth();
+
                         currReading = parseInt((parseInt('{{ $reading->sensor_reading }}')-5)/145 * 100);
                         readCount++;
 
@@ -122,37 +128,40 @@ for (var i = 0; i < 6; i++) {
                     @endif
                 @endforeach
 
+        //get average monthly readings and put into new arrays
         <?php for( $j = 1; $j<7; $j++ ) { ?>
         <?php echo 'sum = 0;' ?>
         <?php echo 'avg = 0;' ?>
-    <?php echo 'for( var i = 0; i < tempReadingArray'.$j.'.length; i++ ){
+        <?php echo 'for( var i = 0; i < tempReadingArray'.$j.'.length; i++ ){
                         sum = sum + parseInt( tempReadingArray'.$j.'[i]);
                     }' ?>
 
-    <?php echo 'avg = sum/tempReadingArray'.$j.'.length;' ?>
+        <?php echo 'avg = sum/tempReadingArray'.$j.'.length;' ?>
 
-    <?php echo 'month'.$j.'Array.push(parseInt(avg));' ?>
+        <?php echo 'month'.$j.'Array.push(parseInt(avg));' ?>
         <?php } ?>
 
-<?php echo 'tempReadingArray1 = [];' ?>
-<?php echo 'tempReadingArray2 = [];' ?>
-<?php echo 'tempReadingArray3 = [];' ?>
-<?php echo 'tempReadingArray4 = [];' ?>
-<?php echo 'tempReadingArray5 = [];' ?>
-<?php echo 'tempReadingArray6 = [];' ?>
+        //empty temp arrays
+        <?php echo 'tempReadingArray1 = [];' ?>
+        <?php echo 'tempReadingArray2 = [];' ?>
+        <?php echo 'tempReadingArray3 = [];' ?>
+        <?php echo 'tempReadingArray4 = [];' ?>
+        <?php echo 'tempReadingArray5 = [];' ?>
+        <?php echo 'tempReadingArray6 = [];' ?>
 
         @endforeach
 
-var colorChoice = ['rgba(255, 99, 132, 1)', 'rgba(255, 159, 64, 1)', 'rgba(255, 205, 86, 1)', 'rgba(75, 192, 192, 1)',
+    var colorChoice = ['rgba(255, 99, 132, 1)', 'rgba(255, 159, 64, 1)', 'rgba(255, 205, 86, 1)', 'rgba(75, 192, 192, 1)',
                         'rgba(54, 162, 235, 1)', 'rgba(153, 102, 255, 1)', 'rgba(231,233,237, 1)', 'rgba(140, 114, 114, 1)', 'rgba(114, 140, 0, 1)',
                         'rgba(14, 11, 114, 1)'];
 
-var ctx = document.getElementById("canvas").getContext("2d");
-var canvas = new Chart(ctx, {
-    type: 'line',
-    data: {
-    labels: newMonthList.reverse(),
-    datasets: [
+    //generate chart data
+    var ctx = document.getElementById("canvas").getContext("2d");
+    var canvas = new Chart(ctx, {
+        type: 'line',
+        data: {
+        labels: newMonthList.reverse(),
+        datasets: [
             <?php $k = 0; ?>
             <?php for( $i = 0; $i<$locationCount; $i++ ) { ?>
                 <?php if($k == 10) { ?>

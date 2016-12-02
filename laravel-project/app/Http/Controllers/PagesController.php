@@ -15,7 +15,8 @@ class PagesController extends Controller
     //
     public function index()
     {
-        $locations = Location::with('readings','sensors')->get();
+
+        $locations = Location::with('readings','sensors')->orderBy('building_number', 'ASC')->get();
         $readings = Readings::with('sensors')->get();
         $sensors = Sensor::with('readings','location')->get();
 
@@ -27,14 +28,9 @@ class PagesController extends Controller
         $locations = Location::with('readings','sensors')->get();
         $readings = Readings::with('sensors')->get();
         $sensors = Sensor::with('readings','location')->get();
-        //$locations = Location::All();
-        //$readings = Readings::All();
-        //$sensors = Sensor::All();
-
 
         return view('pages.about', compact('locations','readings','sensors'));
-        //return view('pages.about', compact('locations', 'readings'));
-        //return view('pages.about');
+
     }
 
     public function trend()
