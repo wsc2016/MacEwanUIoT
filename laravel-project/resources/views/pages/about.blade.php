@@ -42,16 +42,16 @@
 
 <div class="container">
     <div class="mx-auto" style="height:100%">
-        <p>The MacEwan University Waste Management System is a working demonstration of resource management
-            and sustainability featuring IoT(The Internet Of Things) connectivity.</p>
+        <h3>The MacEwan University Waste Management System is a working demonstration of resource management
+            and sustainability featuring IoT(The Internet Of Things) connectivity.</h3>
 
-        <p>Utilizing low cost infrared proximity sensors and Raspberry Pi hardware, capacity data of waste
+        <h3>Utilizing low cost infrared proximity sensors and Raspberry Pi hardware, capacity data of waste
             bins is detected, encrypted and sent through client nodes to a central server.  This server inputs
             the data into a database and provides an administrative view of all the connected client nodes via
-            a web interface.</p>
+            a web interface.</h3>
 
-        <p>Along with data logs and statistical information, the MacEwan University Waste Management System
-            provides the information required to efficiently and effectively manage waste collection resources.</p>
+        <h3>Along with data logs and statistical information, the MacEwan University Waste Management System
+            provides the information required to efficiently and effectively manage waste collection resources.</h3>
     </div>
 </div>
 

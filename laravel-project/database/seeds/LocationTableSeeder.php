@@ -17,12 +17,12 @@ class LocationTableSeeder extends Seeder
         foreach (range(1, 40) as $index) {
 
             DB::table('sensor_location')->insert([
-                'garbage_bin_location_name' => $faker->randomElement($array = array('FoodCourt', 'Nursing',
-                        'Administration', 'CompSci', 'Physics', 'Psychology', 'Chemistry', 'Biology', 'Science',
-                        'Library', 'Parking', 'Gymnasium', 'Arts')). '-' . $index,
+                'garbage_bin_location_name' => $faker->randomElement($array = array('Food', 'Nursing',
+                        'Admin', 'CompSci', 'Phys', 'Psych', 'Chem', 'Bio', 'Science',
+                        'Lib', 'Park', 'Gym', 'Arts')). '-' . $index,
                 'building_number' => $count,
-                'hallway_description' => $faker->randomElement($array = array('North West', 'South West', 'North East',
-                        'South East', 'North', 'South', 'West', 'East')).' '
+                'hallway_description' => $faker->randomElement($array = array('NW', 'SW', 'NE',
+                        'SE', 'N', 'S', 'W', 'E')).' '
                     .$faker->randomElement($array = array('Entrance', 'Exit', 'Corridor')),
                 'room_number' => $faker->numberBetween($min = 100, $max = 399)
             ]);

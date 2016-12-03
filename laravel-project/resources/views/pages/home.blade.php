@@ -43,7 +43,7 @@
 
 <h2>Current Capacity</h2>
 
-<div class="container-fluid">
+<div class="container">
 
     <table class="table table-hover">
     <tbody>
@@ -58,14 +58,14 @@
                             @if ($location->sensor_location_id == $sensor->sensor_location_id)
                             <?php $colCount++ ?>
                                 <td class="align-text-bottom">
-                                    <h6>Location: {{ $location->garbage_bin_location_name }}</h6>
+                                    <h5><b>Location:</b><br> {{ $location->garbage_bin_location_name }}</h5>
                                     <?php $s = $sensor->sensor_details_id ?>
                                     <div><canvas id="<?php echo 'myDoughnutChart'.$s ?>"></canvas></div>
 
-                    <h6>Name: <a href="{{ $sensor->sensor_location_id }}">{{ $sensor->sensor_name }}</a></h6>
-                    <h6>Building: {{ $location->building_number }}</h6>
-                    <h6>Hallway: {{ $location->hallway_description }}</h6>
-                    <h6>Room: {{ $location->room_number }}</h6>
+                    <h5><b>Name:</b><br> <a href="{{ $sensor->sensor_location_id }}">{{ $sensor->sensor_name }}</a></h5>
+                    <h5><b>Building:</b> {{ $location->building_number }}</h5>
+                    <h5><b>Hallway:</b><br> {{ $location->hallway_description }}</h5>
+                    <h5><b>Room:</b> {{ $location->room_number }}</h5>
 
                                 </td>
                                 {{-- insert new row after 8 charts --}}
@@ -136,7 +136,7 @@
     <?php for( $i = 0; $i<$count; $i++ ) { ?>
         <?php $j = $i + 1 ?>
         <?php echo "var ctx".$j." = document.getElementById('myDoughnutChart".$j."').getContext('2d'); " ?>
-        <?php echo 'ctx'.$j.'.canvas.width = 150;' ?>
+        <?php echo 'ctx'.$j.'.canvas.width = 125;' ?>
         <?php echo 'ctx'.$j.'.canvas.height = 60;' ?>
     <?php } ?>
 
